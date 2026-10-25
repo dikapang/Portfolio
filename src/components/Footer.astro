@@ -1,0 +1,78 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../config';
+
+const year = new Date().getFullYear();
+const brandName = site.name || 'Portfolio';
+---
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <a class="brand" href="/">{brandName}</a>
+      {site.role && <p class="muted">{site.role}</p>}
+      {site.location && (
+        <p class="footer-line">
+          <Icon name="map-pin" />
+          <span>{site.location}</span>
+        </p>
+      )}
+      {site.email && (
+        <p class="footer-line">
+          <Icon name="mail" />
+          <a href={`mailto:${site.email}`}>{site.email}</a>
+        </p>
+      )}
+    </div>
+
+    {site.links.length > 0 && (
+      <div>
+        <h4 class="footer-h">Tautan</h4>
+        <ul class="footer-list">
+          {site.links.map((l) => (
+            <li><a href={l.href} target="_blank" rel="noopener">{l.label}</a></li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </div>
+
+  <div class="container">
+    <div class="footer-bottom">
+      <span>&copy; <span data-year>{year}</span> {brandName}</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer { border-top: 1px solid var(--border); padding-block: 4rem 2rem; font-size: .875rem; }
+  .footer-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 2.5rem 2rem; }
+  .footer-brand { display: flex; flex-direction: column; align-items: flex-start; gap: .75rem; }
+  .brand { font-size: .9375rem; font-weight: 600; letter-spacing: -.01em; }
+  .footer-brand p { max-width: 36ch; line-height: 1.6; }
+  .footer-line { display: flex; align-items: center; gap: .5rem; color: var(--muted-foreground); }
+  .footer-line svg { width: .875rem; height: .875rem; flex-shrink: 0; }
+  .footer-line a { transition: color .15s; }
+  .footer-line a:hover { color: var(--foreground); }
+  .footer-h { margin-bottom: 1rem; font-size: .875rem; font-weight: 600; }
+  .footer-list { display: grid; gap: .625rem; }
+  .footer-list a { color: var(--muted-foreground); transition: color .15s; overflow-wrap: anywhere; }
+  .footer-list a:hover { color: var(--foreground); }
+  .footer-bottom {
+    display: flex; flex-wrap: wrap; justify-content: center; text-align: center;
+    margin-top: 3.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border);
+    font-size: .8125rem; color: var(--muted-foreground);
+  }
+  @media (max-width: 767px) {
+    .footer-grid { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (pointer: coarse) {
+    .footer-list a { display: inline-block; padding-block: .25rem; }
+  }
+</style>
+
+<script>
+  document.querySelectorAll('[data-year]').forEach((el) => {
+    el.textContent = String(new Date().getFullYear());
+  });
+</script>

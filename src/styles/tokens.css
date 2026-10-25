@@ -1,0 +1,65 @@
+/* Hallmark · v2.0.0 · build: portfolio pribadi · system: locked design.md (referensi audit daya-arsana.com) · genre modern-minimal · job: hire me / lihat pekerjaan · nav: edge-aligned, wordmark + satu aksi · footer: dua kolom, identitas + tautan · hero: ledge (nama di langit senja, lanskap mengisi bawah layar) */
+/* critique: P3 H4 E4 S3 R4 V4 · weakest S — scaffold tanpa material pemilik; section tampil saat config.ts terisi data asli */
+
+/* Design tokens — MODE TUNGGAL: senja. Tanpa dark/light. Dasar gelap hangat marun,
+   aksen jingga matahari terbenam, konvensi shadcn, warna OKLCH. Lapisan lanskap hero
+   (--sky-*, --ridge-*, --cliff) satu keluarga dengan section di bawahnya. */
+:root {
+  color-scheme: dark;
+
+  --font-sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --radius: .625rem;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+
+  --background: oklch(.14 .022 32);
+  --foreground: oklch(.93 .02 70);
+  --card: oklch(.18 .028 33);
+  --card-foreground: oklch(.93 .02 70);
+  --popover: oklch(.18 .028 33);
+  --popover-foreground: oklch(.93 .02 70);
+  --primary: oklch(.75 .15 55);
+  --primary-foreground: oklch(.16 .05 30);
+  --secondary: oklch(.21 .03 36);
+  --secondary-foreground: oklch(.93 .02 70);
+  --muted: oklch(.21 .03 36);
+  --muted-foreground: oklch(.69 .045 55);
+  --accent: oklch(.22 .035 38);
+  --accent-foreground: oklch(.93 .02 70);
+  --destructive: oklch(.704 .191 22.216);
+  --border: oklch(.9 .05 60 / 15%);
+  --input: oklch(.9 .05 60 / 20%);
+  --ring: oklch(.75 .15 55);
+
+  /* Aksen tunggal — jingga matahari terbenam */
+  --brand: oklch(.74 .16 52);
+  --brand-foreground: oklch(.15 .04 30);
+  --brand-text: oklch(.81 .12 58);
+  --success: oklch(.72 .15 145);
+
+  /* Lapisan lanskap senja (kanvas hero) — satu keluarga warna dengan section */
+  --dusk-sun: oklch(.87 .11 80);
+  --sky-top: oklch(.3 .09 30);
+  --sky-mid: oklch(.52 .15 45);
+  --sky-horizon: oklch(.72 .16 60);
+  --ridge-1: oklch(.6 .15 50);
+  --ridge-2: oklch(.49 .14 42);
+  --ridge-3: oklch(.38 .12 35);
+  --ridge-4: oklch(.28 .09 30);
+  --cliff: oklch(.19 .06 28);
+
+  /* Jangkar mask (alpha mask, bukan warna yang dicat) */
+  --mask-ink: #000;
+
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / .05);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / .1), 0 1px 2px -1px rgb(0 0 0 / .1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / .1), 0 2px 4px -2px rgb(0 0 0 / .1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / .1), 0 4px 6px -4px rgb(0 0 0 / .1);
+
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+}

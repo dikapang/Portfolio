@@ -1,0 +1,115 @@
+---
+import Icon from './Icon.astro';
+import { site, projects, about } from '../config';
+
+const hasContact = Boolean(site.email || site.links.length);
+const navLinks: { href: string; label: string }[] = [];
+if (projects.length) navLinks.push({ href: '#work', label: 'Pekerjaan' });
+if (about.length) navLinks.push({ href: '#about', label: 'Profil' });
+if (hasContact) navLinks.push({ href: '#contact', label: 'Kontak' });
+const brandName = site.name || 'Portfolio';
+---
+
+<header class="site-header" id="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="/">{brandName}</a>
+
+    {navLinks.length > 0 && (
+      <nav class="nav-links" aria-label="Utama">
+        {navLinks.map((l) => <a href={l.href}>{l.label}</a>)}
+      </nav>
+    )}
+
+    <div class="header-actions">
+      {site.email && (
+        <a class="btn btn-default btn-sm header-cta" href={`mailto:${site.email}`}>
+          Hubungi saya
+          <Icon name="arrow-up-right" />
+        </a>
+      )}
+
+      {navLinks.length > 0 && (
+        <button class="btn btn-ghost btn-icon menu-toggle" type="button" data-menu-toggle aria-controls="mobile-menu" aria-expanded="false" aria-label="Menu">
+          <Icon name="menu" class="icon-menu" />
+          <Icon name="x" class="icon-x" />
+        </button>
+      )}
+    </div>
+  </div>
+
+  {navLinks.length > 0 && (
+    <div class="sheet" id="mobile-menu" data-state="closed">
+      <nav class="container sheet-nav" aria-label="Seluler">
+        {navLinks.map((l) => <a href={l.href}>{l.label}</a>)}
+        {site.email && (
+          <a class="btn btn-default btn-lg" href={`mailto:${site.email}`}>
+            Hubungi saya
+            <Icon name="arrow-up-right" />
+          </a>
+        )}
+      </nav>
+    </div>
+  )}
+</header>
+
+<style>
+  .site-header {
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in oklch, var(--background) 55%, transparent);
+    -webkit-backdrop-filter: saturate(1.4) blur(14px);
+    backdrop-filter: saturate(1.4) blur(14px);
+    border-bottom: 1px solid transparent;
+    transition: border-color .2s;
+  }
+  .site-header.is-scrolled, .site-header.is-open { border-bottom-color: var(--border); }
+  .header-inner { display: flex; align-items: center; gap: 1rem; height: 4rem; }
+  .brand { display: inline-flex; align-items: center; font-size: .9375rem; font-weight: 600; letter-spacing: -.01em; }
+  .nav-links { display: flex; align-items: center; gap: .125rem; margin-left: 1.5rem; }
+  .nav-links a {
+    padding: .4375rem .75rem; border-radius: var(--radius-md);
+    font-size: .875rem; font-weight: 500; color: var(--muted-foreground);
+    transition: color .15s, background-color .15s;
+  }
+  .nav-links a:hover, .nav-links a[aria-current="page"] { color: var(--foreground); background: var(--accent); }
+  .header-actions { display: flex; align-items: center; gap: .5rem; margin-left: auto; }
+  .menu-toggle { display: none; }
+
+  .sheet { display: none; border-top: 1px solid var(--border); max-height: calc(100svh - 4rem); overflow: auto; }
+  .sheet[data-state="open"] { display: block; }
+  .sheet-nav { display: flex; flex-direction: column; padding-block: .5rem 1.5rem; }
+  .sheet-nav a:not(.btn) {
+    padding: .875rem 0; border-bottom: 1px solid var(--border);
+    font-size: 1.125rem; font-weight: 500; letter-spacing: -.01em;
+  }
+  .sheet-nav .btn { margin-top: 1.25rem; }
+
+  @media (max-width: 899px) {
+    .nav-links, .header-cta { display: none; }
+    .menu-toggle { display: inline-flex; }
+  }
+</style>
+
+<script>
+  const hdr = document.getElementById('site-header');
+
+  if (hdr) {
+    const onScroll = () => hdr.classList.toggle('is-scrolled', scrollY > 8);
+    onScroll();
+    addEventListener('scroll', onScroll, { passive: true });
+  }
+
+  const tg = document.querySelector('[data-menu-toggle]');
+  const sheet = document.getElementById('mobile-menu');
+  if (tg && sheet) {
+    const set = (open: boolean) => {
+      sheet.dataset.state = open ? 'open' : 'closed';
+      tg.setAttribute('aria-expanded', String(open));
+      hdr?.classList.toggle('is-open', open);
+      document.body.style.overflow = open ? 'hidden' : '';
+    };
+    tg.addEventListener('click', () => set(sheet.dataset.state !== 'open'));
+    sheet.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => set(false)));
+    addEventListener('keydown', (e) => { if (e.key === 'Escape') set(false); });
+    addEventListener('resize', () => { if (innerWidth >= 900) set(false); });
+  }
+</script>

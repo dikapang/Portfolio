@@ -1,0 +1,217 @@
+/* Base — lapisan di atas tokens.css. Semua perbaikan temuan audit sudah masuk:
+   clip di html+body, ring fokus instan, tiga kanal disabled, tinggi kontrol 44px+, :active,
+   label sentence-case tanpa tracking, angka tabular, reduced-motion. */
+
+*, *::before, *::after { box-sizing: border-box; border-width: 0; border-style: solid; border-color: var(--border); }
+
+html {
+  overflow-x: clip;
+  scroll-padding-top: 5rem;
+  -webkit-text-size-adjust: 100%;
+  tab-size: 4;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+body {
+  overflow-x: clip;
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  caret-color: var(--brand-text);
+}
+
+h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd { margin: 0; }
+h1, h2, h3, h4, h5, h6 { font-size: inherit; font-weight: inherit; overflow-wrap: break-word; min-width: 0; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+img, svg, video, canvas { display: block; max-width: 100%; }
+button, input, textarea, select { font: inherit; color: inherit; background: transparent; margin: 0; }
+button { cursor: pointer; }
+:where(a), :where(a:hover) { color: inherit; text-decoration: none; }
+
+::selection { background: color-mix(in oklch, var(--brand) 28%, transparent); }
+:root { scrollbar-color: color-mix(in oklch, var(--muted-foreground) 45%, transparent) transparent; }
+
+/* Fokus: ring instan, tidak pernah memudar */
+:where(a, button, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Tipografi — Geist untuk semuanya, Geist Mono hanya untuk kode dan angka indeks.
+   Heading satu weight satu warna; tidak ada kata beraksen, tidak ada eyebrow. */
+.display { font-size: clamp(2.75rem, 6.6vw, 5.25rem); font-weight: 600; letter-spacing: -.045em; line-height: 1.02; text-wrap: balance; }
+.h1 { font-size: clamp(2.5rem, 5.4vw, 4.25rem); font-weight: 600; letter-spacing: -.042em; line-height: 1.05; text-wrap: balance; }
+.h2 { font-size: clamp(2rem, 4.2vw, 3.25rem); font-weight: 600; letter-spacing: -.038em; line-height: 1.08; text-wrap: balance; }
+.h3 { font-size: 1.25rem; font-weight: 600; letter-spacing: -.02em; line-height: 1.3; text-wrap: balance; }
+.h4 { font-size: 1rem; font-weight: 600; letter-spacing: -.01em; line-height: 1.4; }
+.lead { font-size: 1.125rem; line-height: 1.7; color: var(--muted-foreground); text-wrap: pretty; }
+.p { line-height: 1.7; text-wrap: pretty; }
+.small { font-size: .875rem; line-height: 1.55; }
+.muted { color: var(--muted-foreground); }
+.mono { font-family: var(--font-mono); }
+.tabular { font-variant-numeric: tabular-nums; }
+
+/* Label: body face, satu step lebih kecil, sentence case, tanpa tracking */
+.label { font-size: .875rem; color: var(--muted-foreground); }
+.label-strong { font-size: .875rem; font-weight: 500; }
+
+.icon { width: 1rem; height: 1rem; flex-shrink: 0; }
+
+/* Tombol — marketing: 44px default, 48px lg */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  white-space: nowrap; border-radius: var(--radius-md); border: 1px solid transparent;
+  height: 2.75rem; padding: 0 1.25rem; font-size: .875rem; font-weight: 500; line-height: 1.25rem;
+  user-select: none;
+  transition: color .15s, background-color .15s, border-color .15s;
+}
+.btn:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.btn:active { transform: translateY(1px); }
+.btn:disabled, .btn[aria-disabled="true"] { opacity: .5; cursor: not-allowed; pointer-events: none; }
+.btn svg { width: 1rem; height: 1rem; flex-shrink: 0; pointer-events: none; }
+
+.btn-default { background: var(--primary); color: var(--primary-foreground); box-shadow: var(--shadow-xs); }
+.btn-default:hover { background: color-mix(in oklch, var(--primary) 90%, transparent); }
+.btn-default:active { background: color-mix(in oklch, var(--primary) 82%, transparent); }
+.btn-outline { background: color-mix(in oklch, var(--input) 30%, transparent); border-color: var(--input); color: var(--foreground); box-shadow: var(--shadow-xs); }
+.btn-outline:hover { background: var(--accent); }
+.btn-secondary { background: var(--secondary); color: var(--secondary-foreground); box-shadow: var(--shadow-xs); }
+.btn-secondary:hover { background: color-mix(in oklch, var(--secondary) 80%, transparent); }
+.btn-ghost { color: var(--foreground); }
+.btn-ghost:hover { background: color-mix(in oklch, var(--accent) 50%, transparent); }
+.btn-brand { background: var(--brand); color: var(--brand-foreground); box-shadow: var(--shadow-xs); }
+.btn-brand:hover { background: color-mix(in oklch, var(--brand) 88%, transparent); }
+.btn-inverse { border-color: color-mix(in oklch, var(--primary-foreground) 24%, transparent); color: var(--primary-foreground); }
+.btn-inverse:hover { background: color-mix(in oklch, var(--primary-foreground) 10%, transparent); }
+.btn-inverse:focus-visible { outline-color: var(--primary-foreground); }
+.btn-link { height: auto; padding: 0; color: var(--primary); text-underline-offset: 4px; }
+.btn-link:hover { text-decoration: underline; }
+
+.btn-lg { height: 3rem; padding: 0 1.5rem; }
+.btn-sm { height: 2.5rem; padding: 0 1rem; }
+.btn-icon { width: 2.75rem; padding: 0; }
+
+/* Badge */
+.badge {
+  display: inline-flex; align-items: center; gap: .25rem; width: fit-content; flex-shrink: 0;
+  max-width: 100%; white-space: normal; text-align: left;
+  border-radius: var(--radius-md); border: 1px solid transparent;
+  padding: .125rem .5rem; font-size: .75rem; font-weight: 500; line-height: 1rem;
+  transition: color .15s, background-color .15s;
+}
+.badge-outline { border-color: var(--border); color: var(--foreground); }
+.badge-secondary { background: var(--secondary); color: var(--secondary-foreground); }
+.badge-brand {
+  background: color-mix(in oklch, var(--brand) 12%, transparent);
+  border-color: color-mix(in oklch, var(--brand) 30%, transparent);
+  color: var(--brand-text);
+}
+a.badge-outline:hover { background: var(--accent); }
+
+/* Kartu — satu lapis kontainmen, tidak ada kartu dalam kartu */
+.card {
+  display: flex; flex-direction: column; gap: 1.5rem;
+  border-radius: var(--radius-xl); border: 1px solid var(--border);
+  background: var(--card); color: var(--card-foreground);
+  padding: 1.5rem; box-shadow: var(--shadow-sm);
+  transition: border-color .2s, box-shadow .2s;
+}
+a.card:hover { border-color: color-mix(in oklch, var(--foreground) 22%, transparent); box-shadow: var(--shadow-md); }
+
+/* Layout dasar */
+.container { width: 100%; max-width: 1200px; margin-inline: auto; padding-inline: 1.25rem; }
+@media (min-width: 768px) { .container { padding-inline: 2rem; } }
+.section { padding-block: clamp(5rem, 10vw, 8rem); }
+.section-head { display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; max-width: 46rem; margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+.section-head .h2 { margin-top: calc(-.25rem); }
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; }
+.link-arrow { display: inline-flex; align-items: center; gap: .375rem; font-size: .875rem; font-weight: 500; }
+.link-arrow svg { transition: transform .2s var(--ease-out); }
+a:hover .link-arrow svg { transform: translateX(3px); }
+.grid-bg {
+  background-color: color-mix(in oklch, var(--muted) 40%, var(--card));
+  background-image:
+    linear-gradient(to right, color-mix(in oklch, var(--foreground) 9%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklch, var(--foreground) 9%, transparent) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Angka display selalu tabular */
+.stat-num { font-size: clamp(2.75rem, 5vw, 4rem); font-weight: 600; letter-spacing: -.05em; line-height: 1; font-variant-numeric: tabular-nums; }
+.stat-unit { margin-left: .06em; font-size: .55em; letter-spacing: -.02em; color: var(--brand-text); font-variant-numeric: tabular-nums; }
+
+/* Ikon menu — global karena SVG dirender komponen Icon */
+.menu-toggle .icon-x { display: none; }
+.menu-toggle[aria-expanded="true"] .icon-menu { display: none; }
+.menu-toggle[aria-expanded="true"] .icon-x { display: block; }
+
+/* Kursor kustom di dalam hero (elemen dibuat oleh scripts/cursor.ts) */
+.hero.has-cursor,
+.hero.has-cursor a,
+.hero.has-cursor button { cursor: none; }
+.cursor-dot {
+  position: fixed; left: 0; top: 0; width: 6px; height: 6px;
+  border-radius: 999px; background: var(--brand);
+  pointer-events: none; z-index: 100; opacity: 0;
+  transition: opacity .2s;
+}
+.cursor-ring {
+  position: fixed; left: 0; top: 0; width: 34px; height: 34px;
+  border: 1px solid color-mix(in oklch, var(--foreground) 45%, transparent);
+  border-radius: 999px;
+  pointer-events: none; z-index: 100; opacity: 0;
+  transition: opacity .2s;
+}
+.cursor-ring .tick {
+  position: absolute; width: 1.5px; height: 5px;
+  background: var(--brand); opacity: 0;
+  transition: opacity .15s;
+}
+.cursor-ring.is-hover .tick { opacity: 1; }
+.tick-n { left: 50%; top: -3px; margin-left: -0.75px; }
+.tick-s { left: 50%; bottom: -3px; margin-left: -0.75px; }
+.tick-e { top: 50%; right: -3px; width: 5px; height: 1.5px; margin-top: -0.75px; }
+.tick-w { top: 50%; left: -3px; width: 5px; height: 1.5px; margin-top: -0.75px; }
+
+/* Cincin progres isi-daya (mengikuti kursor saat menahan klik di hero) */
+.hold-host { position: fixed; left: 0; top: 0; z-index: 99; pointer-events: none; opacity: 0; }
+.hold-host.is-on { opacity: 1; }
+.hold-ring { width: 44px; height: 44px; transform: translate(-50%, -50%); }
+.hold-ring svg { display: block; width: 100%; height: 100%; transform: rotate(-90deg); }
+.hold-ring circle { fill: none; }
+.hold-ring-track { stroke: color-mix(in oklch, var(--foreground) 22%, transparent); stroke-width: 1.5; }
+.hold-ring-arc { stroke: var(--brand); stroke-width: 2; stroke-linecap: round; }
+.hold-host.is-done .hold-ring-arc { stroke: var(--success); }
+
+/* Saklar suara hero */
+.hold-sound { gap: .375rem; border-color: var(--border); }
+.hold-sound[aria-pressed="true"] { border-color: color-mix(in oklch, var(--brand) 55%, transparent); color: var(--brand-text); }
+
+/* Gerak: hanya transform + opacity; reduced-motion mematikan sisanya */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+}
+
+/* Responsive detail */
+@media (max-width: 639px) {
+  .btn { white-space: normal; text-align: center; }
+  .hero .actions, .cta .actions { flex-direction: column; align-items: stretch; width: 100%; }
+  .hero .actions .btn, .cta .actions .btn { width: 100%; }
+}
+@media (max-width: 479px) {
+  .display, .h1, .h2 { -webkit-hyphens: auto; hyphens: auto; }
+}
+@media (pointer: coarse) {
+  .btn { min-height: 2.75rem; }
+  .btn-sm { min-height: 2.5rem; }
+  .btn-link { min-height: 0; }
+}

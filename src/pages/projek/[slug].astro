@@ -1,0 +1,152 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Icon from '../../components/Icon.astro';
+import { projects, projectSlug, site } from '../../config';
+
+export function getStaticPaths() {
+  return projects
+    .filter((p) => p.href?.startsWith('/projek/'))
+    .map((p) => ({ params: { slug: projectSlug(p.title) }, props: { project: p } }));
+}
+
+const { project } = Astro.props;
+const others = projects.filter((p) => p !== project && p.href?.startsWith('/projek/'));
+const external = project.href && !project.href.startsWith('/projek/') ? project.href : undefined;
+---
+
+<Layout title={project.title} description={project.summary}>
+  <article>
+    {/* Kepala proyek */}
+    <section class="section page-head">
+      <div class="container">
+        <a class="back" href="/#work">
+          <Icon name="arrow-left" />
+          Kembali ke pekerjaan
+        </a>
+        <h1 class="h1" data-hero>{project.title}</h1>
+        <p class="lead">{project.summary}</p>
+        {(project.kind || project.year) && (
+          <p class="label detail-kind">{[project.kind, project.year].filter(Boolean).join(', ')}</p>
+        )}
+        {project.badges && project.badges.length > 0 && (
+          <div class="badges">
+            {project.badges.map((b) => <span class="badge badge-outline">{b}</span>)}
+          </div>
+        )}
+      </div>
+    </section>
+
+    {/* Tubuh proyek */}
+    <section class="section page-body">
+      <div class="container">
+        {project.image && (
+          <figure class="shot">
+            <img src={project.image} alt={`Tangkapan layar proyek ${project.title}`} />
+          </figure>
+        )}
+
+        {project.metrics && project.metrics.length > 0 && (
+          <dl class="metrics" data-stagger>
+            {project.metrics.map((m) => (
+              <div>
+                <dt>{m.label}</dt>
+                <dd>{m.value}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
+
+        <div class="prose" data-reveal>
+          {(project.description ?? []).map((para) => <p class="p">{para}</p>)}
+        </div>
+
+        {external && (
+          <div class="actions">
+            <a class="btn btn-default btn-lg" href={external} target="_blank" rel="noopener">
+              Kunjungi proyek
+              <Icon name="arrow-up-right" />
+            </a>
+          </div>
+        )}
+      </div>
+    </section>
+
+    {/* Proyek lainnya */}
+    {others.length > 0 && (
+      <section class="section others">
+        <div class="container">
+          <div class="section-head" data-reveal>
+            <h2 class="h2">Proyek lainnya</h2>
+          </div>
+          <div class="other-list" data-stagger>
+            {others.map((p) => (
+              <a class="other-item" href={p.href}>
+                <span class="h3">{p.title}</span>
+                <span class="muted small other-summary">{p.summary}</span>
+                <Icon name="arrow-right" />
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+  </article>
+</Layout>
+
+<style>
+  .page-head { padding-bottom: 0; }
+  .page-body { padding-top: clamp(2.5rem, 5vw, 4rem); }
+  .others { padding-top: 0; }
+
+  .back {
+    display: inline-flex; align-items: center; gap: .375rem;
+    margin-bottom: 2rem; font-size: .875rem; font-weight: 500;
+    color: var(--muted-foreground); transition: color .15s;
+  }
+  .back:hover { color: var(--foreground); }
+  .back svg { transition: transform .2s var(--ease-out); }
+  .back:hover svg { transform: translateX(-3px); }
+
+  .page-head .h1 { max-width: 16ch; }
+  .page-head .lead { max-width: 40rem; margin-top: 1.25rem; }
+  .detail-kind { margin-top: 1rem; }
+  .badges { display: flex; flex-wrap: wrap; gap: .375rem; margin-top: 1.5rem; }
+
+  .shot {
+    border: 1px solid var(--border); border-radius: var(--radius-xl);
+    overflow: hidden; box-shadow: var(--shadow-md); margin-bottom: 2.5rem;
+  }
+  .shot img { width: 100%; }
+
+  .metrics {
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px;
+    border: 1px solid var(--border); border-radius: var(--radius-xl);
+    background: var(--border); overflow: hidden; margin-bottom: 2.5rem;
+  }
+  .metrics > div { padding: 1.25rem 1.5rem; background: var(--card); }
+  .metrics dt { font-size: .75rem; color: var(--muted-foreground); }
+  .metrics dd {
+    margin-top: .375rem; font-size: 1.75rem; font-weight: 600;
+    letter-spacing: -.035em; font-variant-numeric: tabular-nums;
+  }
+
+  .prose { display: grid; gap: 1.25rem; max-width: 65ch; }
+  .page-body .actions { margin-top: 2.5rem; }
+
+  .other-list { display: grid; gap: 1rem; }
+  .other-item {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .375rem 1rem;
+    align-items: center;
+    border: 1px solid var(--border); border-radius: var(--radius-xl);
+    background: var(--card); padding: 1.25rem 1.5rem;
+    box-shadow: var(--shadow-sm);
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .other-item:hover { border-color: color-mix(in oklch, var(--foreground) 22%, transparent); box-shadow: var(--shadow-md); }
+  .other-item svg { grid-row: span 2; color: var(--muted-foreground); }
+  .other-summary { grid-column: 1; }
+
+  @media (max-width: 899px) {
+    .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+</style>
