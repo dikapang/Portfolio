@@ -3,113 +3,159 @@ import Icon from './Icon.astro';
 import { site, projects, about } from '../config';
 
 const hasContact = Boolean(site.email || site.links.length);
-const navLinks: { href: string; label: string }[] = [];
-if (projects.length) navLinks.push({ href: '#work', label: 'Pekerjaan' });
-if (about.length) navLinks.push({ href: '#about', label: 'Profil' });
-if (hasContact) navLinks.push({ href: '#contact', label: 'Kontak' });
+const navLinks: { href: string; label: string; note: string }[] = [];
+if (projects.length) navLinks.push({ href: '/#work', label: 'Pekerjaan', note: 'Studi kasus terpilih' });
+if (about.length) navLinks.push({ href: '/#about', label: 'Profil', note: 'Siapa saya di balik kode' });
+if (hasContact) navLinks.push({ href: '/#contact', label: 'Kontak', note: 'Mulai percakapan' });
 const brandName = site.name || 'Portfolio';
 ---
 
 <header class="site-header" id="site-header">
-  <div class="container header-inner">
-    <a class="brand" href="/">{brandName}</a>
+  <nav class="socials" aria-label="Media sosial">
+    {site.links.map((l) => (
+      <a href={l.href} target="_blank" rel="noopener noreferrer">{l.label}</a>
+    ))}
+  </nav>
 
-    {navLinks.length > 0 && (
-      <nav class="nav-links" aria-label="Utama">
-        {navLinks.map((l) => <a href={l.href}>{l.label}</a>)}
-      </nav>
-    )}
+  <a class="brand" href="/">{brandName}</a>
 
-    <div class="header-actions">
-      {site.email && (
-        <a class="btn btn-default btn-sm header-cta" href={`mailto:${site.email}`}>
-          Hubungi saya
-          <Icon name="arrow-up-right" />
+  <button class="menu-btn" type="button" data-menu-toggle aria-expanded="false" aria-controls="site-menu">
+    <em class="roll" aria-hidden="true">
+      <span class="roll-a">Menu</span>
+      <span class="roll-b">Tutup</span>
+    </em>
+    <span class="lines" aria-hidden="true"><i></i><i></i></span>
+  </button>
+</header>
+
+<div class="menu-overlay" id="site-menu" data-state="closed" aria-hidden="true">
+  <div class="menu-inner">
+    <nav class="menu-nav" aria-label="Utama">
+      {navLinks.map((l, i) => (
+        <a class="menu-link" href={l.href} style={`--i:${i}`}>
+          <span class="menu-idx">{String(i + 1).padStart(2, '0')}</span>
+          <span class="menu-label">{l.label}</span>
+          <span class="menu-note">{l.note}</span>
         </a>
-      )}
-
-      {navLinks.length > 0 && (
-        <button class="btn btn-ghost btn-icon menu-toggle" type="button" data-menu-toggle aria-controls="mobile-menu" aria-expanded="false" aria-label="Menu">
-          <Icon name="menu" class="icon-menu" />
-          <Icon name="x" class="icon-x" />
-        </button>
-      )}
+      ))}
+    </nav>
+    <div class="menu-foot">
+      {site.email && <a class="menu-mail" href={`mailto:${site.email}`}>{site.email}</a>}
+      <p class="menu-meta">{site.location}</p>
     </div>
   </div>
-
-  {navLinks.length > 0 && (
-    <div class="sheet" id="mobile-menu" data-state="closed">
-      <nav class="container sheet-nav" aria-label="Seluler">
-        {navLinks.map((l) => <a href={l.href}>{l.label}</a>)}
-        {site.email && (
-          <a class="btn btn-default btn-lg" href={`mailto:${site.email}`}>
-            Hubungi saya
-            <Icon name="arrow-up-right" />
-          </a>
-        )}
-      </nav>
-    </div>
-  )}
-</header>
+</div>
 
 <style>
   .site-header {
-    position: sticky; top: 0; z-index: 50;
-    background: color-mix(in oklch, var(--background) 55%, transparent);
-    -webkit-backdrop-filter: saturate(1.4) blur(14px);
-    backdrop-filter: saturate(1.4) blur(14px);
-    border-bottom: 1px solid transparent;
-    transition: border-color .2s;
+    position: fixed; inset: 0 0 auto; z-index: 60;
+    display: flex; align-items: flex-start; justify-content: space-between;
+    background: transparent; pointer-events: none;
   }
-  .site-header.is-scrolled, .site-header.is-open { border-bottom-color: var(--border); }
-  .header-inner { display: flex; align-items: center; gap: 1rem; height: 4rem; }
-  .brand { display: inline-flex; align-items: center; font-size: .9375rem; font-weight: 600; letter-spacing: -.01em; }
-  .nav-links { display: flex; align-items: center; gap: .125rem; margin-left: 1.5rem; }
-  .nav-links a {
-    padding: .4375rem .75rem; border-radius: var(--radius-md);
-    font-size: .875rem; font-weight: 500; color: var(--muted-foreground);
-    transition: color .15s, background-color .15s;
-  }
-  .nav-links a:hover, .nav-links a[aria-current="page"] { color: var(--foreground); background: var(--accent); }
-  .header-actions { display: flex; align-items: center; gap: .5rem; margin-left: auto; }
-  .menu-toggle { display: none; }
+  .site-header a, .site-header button { pointer-events: auto; }
 
-  .sheet { display: none; border-top: 1px solid var(--border); max-height: calc(100svh - 4rem); overflow: auto; }
-  .sheet[data-state="open"] { display: block; }
-  .sheet-nav { display: flex; flex-direction: column; padding-block: .5rem 1.5rem; }
-  .sheet-nav a:not(.btn) {
-    padding: .875rem 0; border-bottom: 1px solid var(--border);
-    font-size: 1.125rem; font-weight: 500; letter-spacing: -.01em;
+  /* pojok kiri: tautan sosial, senyap */
+  .socials { display: flex; gap: 1rem; padding: 1.5rem 0 0 1.75rem; }
+  .socials a {
+    font-size: .8125rem; font-weight: 500; color: var(--muted-foreground);
+    transition: color .2s;
   }
-  .sheet-nav .btn { margin-top: 1.25rem; }
+  .socials a:hover { color: var(--brand-text); }
+  @media (max-width: 639px) { .socials { display: none; } }
 
-  @media (max-width: 899px) {
-    .nav-links, .header-cta { display: none; }
-    .menu-toggle { display: inline-flex; }
+  /* brand di tengah atas, seperti Forge */
+  .brand {
+    position: absolute; top: 1.35rem; left: 50%; transform: translateX(-50%);
+    font-size: .9375rem; font-weight: 600; letter-spacing: -.01em; color: var(--foreground);
   }
+
+  /* tombol menu: teks bergulir Menu/Tutup + dua garis */
+  .menu-btn {
+    display: flex; align-items: center; gap: .75rem;
+    margin: 1.1rem 1.75rem 0 0; padding: .5rem .25rem;
+    background: none; border: 0; cursor: pointer;
+    color: var(--foreground);
+  }
+  .menu-btn:focus-visible { outline: 2px solid var(--ring); outline-offset: 4px; border-radius: var(--radius-sm); }
+  .roll { position: relative; display: grid; overflow: clip; height: 1.65rem; font-size: .9375rem; font-weight: 600; }
+  .roll span {
+    grid-area: 1 / 1; display: block; height: 1.65rem; line-height: 1.35;
+    padding-bottom: .12em;
+    transition: transform .55s var(--ease-out);
+  }
+  .roll-b { transform: translateY(115%); }
+  :global([data-menu-open="true"]) .roll-a { transform: translateY(-100%); }
+  :global([data-menu-open="true"]) .roll-b { transform: translateY(0); }
+  .lines { display: grid; gap: 4px; width: 26px; }
+  .lines i { display: block; height: 1.5px; background: var(--foreground); transition: transform .55s var(--ease-out); transform-origin: center; }
+  :global([data-menu-open="true"]) .lines i:first-child { transform: translateY(2.75px) rotate(45deg); }
+  :global([data-menu-open="true"]) .lines i:last-child { transform: translateY(-2.75px) rotate(-45deg); }
+
+  /* overlay menu fullscreen */
+  .menu-overlay {
+    position: fixed; inset: 0; z-index: 50;
+    display: grid; place-items: center;
+    background: color-mix(in oklch, var(--background) 88%, transparent);
+    -webkit-backdrop-filter: blur(18px) saturate(1.2);
+    backdrop-filter: blur(18px) saturate(1.2);
+    clip-path: inset(0 0 100% 0);
+    transition: clip-path .7s var(--ease-out), visibility 0s linear .7s;
+    visibility: hidden;
+  }
+  .menu-overlay[data-state="open"] {
+    clip-path: inset(0 0 0% 0);
+    visibility: visible;
+    transition: clip-path .7s var(--ease-out);
+  }
+  .menu-inner { display: grid; gap: clamp(2.5rem, 6vh, 4rem); width: 100%; max-width: 42rem; padding-inline: 1.5rem; margin-inline: auto; }
+  .menu-nav { display: grid; }
+  .menu-link {
+    display: grid; grid-template-columns: auto 1fr auto; align-items: baseline; gap: 1.25rem;
+    padding: 1.1rem .5rem;
+    border-bottom: 1px solid var(--border);
+    opacity: 0; transform: translateY(22px);
+    transition: opacity .5s var(--ease-out), transform .5s var(--ease-out), border-color .2s;
+    transition-delay: 0s;
+  }
+  .menu-overlay[data-state="open"] .menu-link {
+    opacity: 1; transform: translateY(0);
+    transition-delay: calc(.25s + var(--i) * .08s);
+  }
+  .menu-idx { font-family: var(--font-mono); font-size: .8125rem; color: var(--muted-foreground); }
+  .menu-label {
+    font-size: clamp(1.75rem, 4.5vw, 2.75rem); font-weight: 600; letter-spacing: -.03em;
+    transition: color .2s, transform .3s var(--ease-out);
+  }
+  .menu-link:hover .menu-label { color: var(--brand-text); transform: translateX(8px); }
+  .menu-note { font-size: .8125rem; color: var(--muted-foreground); }
+  .menu-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .75rem 2rem; opacity: 0; transition: opacity .5s var(--ease-out) .5s; }
+  .menu-overlay[data-state="open"] .menu-foot { opacity: 1; }
+  .menu-mail { font-size: .9375rem; font-weight: 500; color: var(--brand-text); }
+  .menu-meta { font-size: .8125rem; color: var(--muted-foreground); }
 </style>
 
 <script>
   const hdr = document.getElementById('site-header');
+  const tg = document.querySelector('[data-menu-toggle]');
+  const overlay = document.getElementById('site-menu');
+
+  const setOpen = (open: boolean) => {
+    if (!overlay || !tg) return;
+    overlay.dataset.state = open ? 'open' : 'closed';
+    overlay.setAttribute('aria-hidden', String(!open));
+    tg.setAttribute('aria-expanded', String(open));
+    document.documentElement.dataset.menuOpen = open ? 'true' : 'false';
+    document.body.style.overflow = open ? 'hidden' : '';
+  };
+
+  tg?.addEventListener('click', () => setOpen(overlay?.dataset.state !== 'open'));
+  overlay?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+  addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
+  addEventListener('resize', () => { if (innerWidth >= 900) setOpen(false); });
 
   if (hdr) {
     const onScroll = () => hdr.classList.toggle('is-scrolled', scrollY > 8);
     onScroll();
     addEventListener('scroll', onScroll, { passive: true });
-  }
-
-  const tg = document.querySelector('[data-menu-toggle]');
-  const sheet = document.getElementById('mobile-menu');
-  if (tg && sheet) {
-    const set = (open: boolean) => {
-      sheet.dataset.state = open ? 'open' : 'closed';
-      tg.setAttribute('aria-expanded', String(open));
-      hdr?.classList.toggle('is-open', open);
-      document.body.style.overflow = open ? 'hidden' : '';
-    };
-    tg.addEventListener('click', () => set(sheet.dataset.state !== 'open'));
-    sheet.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => set(false)));
-    addEventListener('keydown', (e) => { if (e.key === 'Escape') set(false); });
-    addEventListener('resize', () => { if (innerWidth >= 900) set(false); });
   }
 </script>

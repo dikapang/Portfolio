@@ -52,8 +52,7 @@ function init(): void {
   const uSkyMid = { value: new THREE.Color() };
   const uSkyHor = { value: new THREE.Color() };
   const uBg = { value: new THREE.Color() };
-  const uCharge = { value: 0 };
-  const uFlash = { value: 0 };
+  const uScroll = { value: 0 };
   const blend: Array<THREE.Material> = [];
   const birdTint = new THREE.Color();
 
@@ -74,7 +73,7 @@ function init(): void {
   {
     const geo = new THREE.PlaneGeometry(150, 80);
     const mat = new THREE.ShaderMaterial({
-      uniforms: { uSkyTop, uSkyMid, uSkyHor, uBg },
+      uniforms: { uSkyTop, uSkyMid, uSkyHor, uBg, uScroll },
       depthWrite: false,
       vertexShader: `
         varying vec2 vUv;
@@ -84,11 +83,14 @@ function init(): void {
         }`,
       fragmentShader: `
         uniform vec3 uSkyTop, uSkyMid, uSkyHor, uBg;
+        uniform float uScroll;
         varying vec2 vUv;
         void main() {
           float hy = 0.425; /* y dunia 0 pada plane ini */
           vec3 sky = mix(uSkyMid, uSkyTop, smoothstep(0.56, 0.85, vUv.y));
           sky = mix(uSkyHor, sky, smoothstep(hy, 0.6, vUv.y));
+          /* langit atas meredup menuju malam seiring progres scroll */
+          sky = mix(sky, sky * vec3(0.78, 0.74, 0.9), uScroll * smoothstep(0.55, 1.0, vUv.y));
           vec3 ground = mix(uSkyHor, uBg, smoothstep(hy, 0.12, vUv.y));
           gl_FragColor = vec4(vUv.y >= hy ? sky : ground, 1.0);
         }`,
@@ -105,7 +107,7 @@ function init(): void {
   {
     const geo = new THREE.PlaneGeometry(9.5, 9.5);
     const mat = new THREE.ShaderMaterial({
-      uniforms: { uSun, uCharge },
+      uniforms: { uSun },
       transparent: true,
       depthWrite: false,
       vertexShader: `
@@ -116,12 +118,11 @@ function init(): void {
         }`,
       fragmentShader: `
         uniform vec3 uSun;
-        uniform float uCharge;
         varying vec2 vUv;
         void main() {
           float d = length(vUv * 2.0 - 1.0);
           float disc = smoothstep(0.5, 0.41, d);
-          float halo = exp(-max(d - 0.44, 0.0) * 3.4) * (0.3 + uCharge * 0.3);
+          float halo = exp(-max(d - 0.44, 0.0) * 3.4) * 0.3;
           float a = clamp(disc + halo * (1.0 - disc), 0.0, 1.0);
           if (a < 0.01) discard;
           gl_FragColor = vec4(uSun, a);
@@ -286,17 +287,18 @@ function init(): void {
   /* ---------- warna burung: siluet marun dari token tebing ---------- */
   birdMat.color.copy(birdTint.set(rgb('--cliff')[0] / 255, rgb('--cliff')[1] / 255, rgb('--cliff')[2] / 255));
 
-  /* ---------- parallax pointer: tiap lapisan bergeser dengan kecepatan sendiri;
-     makin dekat ke pengamat makin cepat — kembalikan ke posisi dasar saat pointer pergi ---------- */
-  const parallax: { obj: THREE.Object3D; k: number; baseX: number; baseY: number }[] = [
-    { obj: skyMesh, k: 0.05, baseX: 0, baseY: 6 },
-    { obj: sun, k: 0.16, baseX: sun.position.x, baseY: sun.position.y },
-    { obj: r1, k: 0.28, baseX: 0, baseY: 0 },
-    { obj: r2, k: 0.5, baseX: 0, baseY: 0 },
-    { obj: r3, k: 0.85, baseX: 0, baseY: 0 },
-    { obj: r4, k: 1.35, baseX: 0, baseY: 0 },
-    { obj: cliffMesh, k: 2.0, baseX: 0, baseY: 0 },
-    { obj: hiker, k: 2.0, baseX: hiker.position.x, baseY: hiker.position.y },
+  /* ---------- parallax pointer + scroll: tiap lapisan bergeser dengan
+     kecepatan sendiri; scroll membuat foreground tenggelam dan matahari naik
+     (sunrise) selama fase pin ---------- */
+  const parallax: { obj: THREE.Object3D; k: number; sk: number; baseX: number; baseY: number }[] = [
+    { obj: skyMesh, k: 0.05, sk: 0, baseX: 0, baseY: 6 },
+    { obj: sun, k: 0.16, sk: -0.9, baseX: sun.position.x, baseY: sun.position.y },
+    { obj: r1, k: 0.28, sk: 0.6, baseX: 0, baseY: 0 },
+    { obj: r2, k: 0.5, sk: 1.3, baseX: 0, baseY: 0 },
+    { obj: r3, k: 0.85, sk: 2.2, baseX: 0, baseY: 0 },
+    { obj: r4, k: 1.35, sk: 3.3, baseX: 0, baseY: 0 },
+    { obj: cliffMesh, k: 2.0, sk: 4.6, baseX: 0, baseY: 0 },
+    { obj: hiker, k: 2.0, sk: 4.6, baseX: hiker.position.x, baseY: hiker.position.y },
   ];
 
   const resize = () => {
@@ -317,33 +319,18 @@ function init(): void {
   const tick = () => {
     const dt = Math.min(0.05, clock.getDelta() || 0.016);
     const t = clock.elapsedTime;
-    uFlash.value = Math.max(0, uFlash.value - dt * 1.1);
     stepBirds(t);
     off.x += (offT.x - off.x) * 0.06;
     off.y += (offT.y - off.y) * 0.06;
+    sProg += (sTarget - sProg) * 0.08;
+    uScroll.value = sProg;
     for (const l of parallax) {
       l.obj.position.x = l.baseX + off.x * l.k + Math.sin(t * 0.1 + l.k) * 0.12;
-      l.obj.position.y = l.baseY - off.y * l.k * 0.3;
+      l.obj.position.y = l.baseY - off.y * l.k * 0.3 - l.sk * sProg;
     }
-    /* hanya matahari yang bercahaya saat isi-daya: membesar & halonya menguat */
-    sun.scale.setScalar(1 + uCharge.value * 0.16 + uFlash.value * 0.08);
     render();
     raf = requestAnimationFrame(tick);
   };
-
-  /* ---------- API isi-daya (holdcharge.ts) ---------- */
-  const burst = () => {
-    if (reduce) return;
-    uFlash.value = 1;
-  };
-  const heroEl = wrap.closest('.hero');
-  (heroEl ?? wrap).addEventListener('hero:charge', ((e: CustomEvent<{ v: number }>) => {
-    uCharge.value = e.detail.v;
-  }) as EventListener);
-  (heroEl ?? wrap).addEventListener('hero:burst', (() => {
-    burst();
-    uCharge.value = 0;
-  }) as EventListener);
 
   const host = wrap.parentElement!;
   host.addEventListener('pointermove', (e) => {
@@ -352,6 +339,17 @@ function init(): void {
     offT.y = -((e.clientY - r.top) / r.height * 2 - 1);
   });
   host.addEventListener('pointerleave', () => { offT.x = 0; offT.y = 0; });
+
+  /* Progres scroll fase pin: 0 di puncak wrapper, 1 saat wrapper habis */
+  let sTarget = 0;
+  let sProg = 0;
+  const measureScroll = () => {
+    const pr = host.getBoundingClientRect();
+    const span = Math.max(1, pr.height - wrap.clientHeight);
+    sTarget = clamp(-pr.top / span, 0, 1);
+  };
+  measureScroll();
+  addEventListener('scroll', measureScroll, { passive: true });
 
   resize();
   new ResizeObserver(() => { resize(); if (!raf) render(); }).observe(wrap);

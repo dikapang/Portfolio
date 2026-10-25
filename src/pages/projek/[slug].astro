@@ -23,8 +23,8 @@ const external = project.href && !project.href.startsWith('/projek/') ? project.
           <Icon name="arrow-left" />
           Kembali ke pekerjaan
         </a>
-        <h1 class="h1" data-hero>{project.title}</h1>
-        <p class="lead">{project.summary}</p>
+        <h1 class="h1" data-reveal>{project.title}</h1>
+        <p class="lead" data-reveal>{project.summary}</p>
         {(project.kind || project.year) && (
           <p class="label detail-kind">{[project.kind, project.year].filter(Boolean).join(', ')}</p>
         )}

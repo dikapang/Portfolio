@@ -12,13 +12,21 @@ const acronym = (title: string): string =>
 ---
 
 <Layout>
-  {/* Lanskap senja: fixed, tetap stuck di belakang semua konten saat scroll */}
-  <div class="bg-field" id="hero-field" aria-hidden="true"></div>
-  <div class="bg-scrim" aria-hidden="true"></div>
+  {/* Pembuka: wordmark + garis isi, lalu tirai naik. CSS murni, tetap aman tanpa JS */}
+  <div class="loader" aria-hidden="true">
+    <p class="loader-word">Dika Pangestu</p>
+    <span class="loader-line"></span>
+  </div>
 
-  {/* 01 · Hero: nama di atas lanskap */}
-  <section class="hero">
-    <div class="container intro-block" data-hero>
+  {/* Lanskap senja: wrapper pin ala parallax — scene sticky 100dvh di dalam
+      wrapper 320dvh; scroll menggerakkan progress (matahari naik, lapisan
+      bergeser), nama menumpang di atas scene dan memudar di paruh akhir */}
+  <div class="scene-wrap" data-scene>
+    <div class="bg-field" id="hero-field" aria-hidden="true"></div>
+
+    {/* 01 · Hero: nama di atas lanskap */}
+    <section class="hero">
+      <div class="container intro-block" data-hero>
       {site.status && (
         <div class="hero-status" role="status">
           <span class="pulse"></span>
@@ -46,7 +54,7 @@ const acronym = (title: string): string =>
     </div>
 
     {projects.length > 1 && (
-      <div class="container index-foot" data-reveal>
+      <div class="container index-foot" data-plx="22">
         <nav class="proj-index" aria-label="Proyek">
           {projects.map((p, i) => (
             <a href={`#proj-${i + 1}`}>
@@ -59,11 +67,11 @@ const acronym = (title: string): string =>
     )}
   </section>
 
-  {/* 02 · Profil saya: panel kaca di atas lanskap yang stuck */}
+  {/* 02 · Chapter Profil: mengisi layar kedua fase pin, masuk dari kanan */}
   {about.length > 0 && (
-    <section class="section about" id="about">
+    <section class="scene-chapter" id="about">
       <div class="container">
-        <div class="about-glass" data-reveal>
+        <div class="about-glass" data-plx-x="46">
           <div class="about-main">
             <h2 class="h2">Profil saya</h2>
             <p class="about-statement">{about[0]}</p>
@@ -109,12 +117,13 @@ const acronym = (title: string): string =>
       </div>
     </section>
   )}
+  </div>
 
   {/* 03 · Pekerjaan terpilih */}
   {projects.length > 0 && (
     <section class="section" id="work">
       <div class="container">
-        <div class="section-head" data-reveal>
+        <div class="section-head" data-reveal data-plx-x="-38">
           <h2 class="h2">Pekerjaan terpilih</h2>
         </div>
         <div class="work-grid" data-stagger>
@@ -122,11 +131,11 @@ const acronym = (title: string): string =>
             const CardBody = (
               <>
                 {p.image ? (
-                  <div class="work-media">
+                  <div class="work-media" data-plx-x={i % 2 ? "-56" : "56"}>
                     <img src={p.image} alt={`Tangkapan layar proyek ${p.title}`} loading="lazy" />
                   </div>
                 ) : (
-                  <div class="work-cover" data-viz="cover">
+                  <div class="work-cover" data-viz="cover" data-plx-x={i % 2 ? "-56" : "56"}>
                     <span class="cover-mark">{acronym(p.title)}</span>
                     {p.year && <span class="cover-year mono">{p.year}</span>}
                   </div>
@@ -172,13 +181,13 @@ const acronym = (title: string): string =>
   {capabilities.length > 0 && (
     <section class="section" id="services">
       <div class="container">
-        <div class="section-head" data-reveal>
+        <div class="section-head" data-reveal data-plx-x="38">
           <h2 class="h2">Yang saya kerjakan</h2>
         </div>
         <div class="cap-grid" data-stagger>
-          {capabilities.map((c) => (
+          {capabilities.map((c, i) => (
             <article class="card cap-card">
-              {c.viz && <div class="cap-visual grid-bg" data-viz={c.viz}></div>}
+              {c.viz && <div class="cap-visual grid-bg" data-viz={c.viz} data-plx-x={i % 2 ? "-46" : "46"}></div>}
               <div class="cap-body">
                 <h3 class="h3">{c.title}</h3>
                 <p class="muted p">{c.description}</p>
@@ -199,7 +208,7 @@ const acronym = (title: string): string =>
   {hasContact && (
     <section class="section" id="contact">
       <div class="container">
-        <div class="cta" data-reveal>
+        <div class="cta" data-plx-x="42">
           <h2 class="h2">Mari bekerja sama.</h2>
           <p class="lead">Ceritakan proyek Anda. Balasan secepatnya lewat kanal di bawah.</p>
           <div class="actions">
@@ -222,22 +231,52 @@ const acronym = (title: string): string =>
 <style>
   /* Hero — dot-field di belakang, konten di tengah layar pertama */
   .hero {
-    position: relative; isolation: isolate; overflow: hidden;
+    position: absolute; top: 0; left: 0; right: 0; height: calc(100dvh - 4rem); isolation: isolate;
     display: flex; flex-direction: column;
-    min-height: calc(100svh - 4rem);
     padding-top: clamp(2rem, 6vh, 5rem);
   }
-  .bg-field {
-    position: fixed; inset: 0; z-index: -2; pointer-events: none;
+  /* Pembuka: tirai wordmark yang terangkat setelah garis terisi */
+  .loader {
+    position: fixed; inset: 0; z-index: 200;
+    display: grid; place-content: center; justify-items: center; gap: 1.25rem;
+    background: var(--background); pointer-events: none;
+    animation: loader-up .75s var(--ease-out) 1.15s forwards;
   }
-  /* Tirai bawah: konten section terbaca di atas lanskap yang stuck */
-  .bg-scrim {
-    position: fixed; left: 0; right: 0; bottom: 0; height: 56vh; z-index: -1;
-    pointer-events: none;
-    background: linear-gradient(to bottom, color-mix(in oklch, var(--background) 0%, transparent), var(--background) 74%);
+  .loader-word {
+    font-size: clamp(1.25rem, 3vw, 1.75rem); font-weight: 600; letter-spacing: -.02em;
+    color: var(--foreground); opacity: 0;
+    animation: loader-in .6s var(--ease-out) .1s forwards;
+  }
+  .loader-line { position: relative; width: min(16rem, 44vw); height: 1.5px; background: var(--border); overflow: hidden; }
+  .loader-line::after {
+    content: ""; position: absolute; inset: 0; background: var(--brand);
+    transform: scaleX(0); transform-origin: left;
+    animation: loader-fill .85s var(--ease-out) .22s forwards;
+  }
+  @keyframes loader-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  @keyframes loader-fill { to { transform: scaleX(1); } }
+  @keyframes loader-up { to { transform: translateY(-100%); visibility: hidden; } }
+  @media (prefers-reduced-motion: reduce) { .loader { display: none; } }
+
+  /* Chapter di dalam fase pin: layar kedua diisi panel Profil */
+  .scene-chapter {
+    position: absolute; top: calc(100dvh - 4rem); left: 0; right: 0;
+    height: calc(100dvh - 4rem);
+    display: grid; align-items: center;
+  }
+
+  /* Wrapper pin ala parallax: scene sticky setinggi viewport di bawah header */
+  .scene-wrap { position: relative; height: 240dvh; }
+  .bg-field {
+    position: sticky; top: 4rem; height: calc(100dvh - 4rem); overflow: clip;
+    z-index: -2; pointer-events: none;
   }
   .bg-field canvas { width: 100% !important; height: 100% !important; }
-  .intro-block { display: flex; flex-direction: column; align-items: center; gap: 1.75rem; text-align: center; margin-block: auto; }
+  .intro-block {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 1.75rem; text-align: left;
+    margin-block: auto 8vh; margin-inline: 0; width: 100%; max-width: none;
+    padding-inline: max(1.5rem, calc((100vw - 1200px) / 2 + 1.25rem));
+  }
   .hero-status {
     display: inline-flex; align-items: center; gap: .5rem;
     padding: .25rem .875rem;
@@ -273,7 +312,8 @@ const acronym = (title: string): string =>
   /* Pekerjaan */
   .work-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
   .work-grid > :last-child:nth-child(odd) { grid-column: 1 / -1; }
-  .work-card { gap: 1.25rem; padding: 1.5rem 0; overflow: hidden; }
+  .work-card { gap: 1.25rem; padding: 1.5rem 0; overflow: hidden; transition: transform .3s var(--ease-out), border-color .2s, box-shadow .3s; }
+  a.work-card:hover { transform: translateY(-5px); border-color: color-mix(in oklch, var(--foreground) 24%, transparent); box-shadow: var(--shadow-md); }
   .work-media { border: 1px solid var(--border); border-radius: var(--radius-lg); aspect-ratio: 16 / 9; overflow: hidden; }
   .work-media img { width: 100%; height: 100%; object-fit: cover; }
   .work-cover {
@@ -381,7 +421,6 @@ const acronym = (title: string): string =>
 
 <script>
   import '../scripts/field3d';
-  import '../scripts/holdcharge';
   import '../scripts/cursor';
   import '../scripts/viz';
 </script>
