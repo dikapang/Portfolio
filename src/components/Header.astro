@@ -51,17 +51,8 @@ const brandName = site.name || 'Portfolio';
     position: fixed; inset: 0 0 auto; z-index: 60;
     display: flex; align-items: flex-start; justify-content: space-between;
     background: none; pointer-events: none;
-    border-bottom: 0;
-    transition: background .35s var(--ease-out), border-color .35s var(--ease-out);
   }
   .site-header a, .site-header button { pointer-events: auto; }
-  /* hanya setelah pengguna benar-benar scroll: latar blur tipis membantu keterbacaan */
-  .site-header.is-scrolled {
-    background: color-mix(in oklch, var(--background) 58%, transparent);
-    -webkit-backdrop-filter: saturate(1.35) blur(14px);
-    backdrop-filter: saturate(1.35) blur(14px);
-    border-bottom: 1px solid var(--border);
-  }
 
   /* pojok kiri: tautan sosial, senyap */
   .socials { display: flex; gap: 1rem; padding: 1.5rem 0 0 1.75rem; }
@@ -162,10 +153,5 @@ const brandName = site.name || 'Portfolio';
   addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
   addEventListener('resize', () => { if (innerWidth >= 900) setOpen(false); });
 
-  if (hdr) {
-    /* blur hanya muncul setelah benar-benar tergulir (> 64px), bukan karena
-       posisi scroll yang dipulihkan browser saat reload */
-    const onScroll = () => hdr.classList.toggle('is-scrolled', scrollY > 64);
-    addEventListener('scroll', onScroll, { passive: true });
-  }
+  void hdr; /* header murni transparan: tidak ada kelas/latarar yang berubah saat scroll */
 </script>
