@@ -11,7 +11,7 @@ export function getStaticPaths() {
 
 const { project } = Astro.props;
 const others = projects.filter((p) => p !== project && p.href?.startsWith('/projek/'));
-const external = project.href && !project.href.startsWith('/projek/') ? project.href : undefined;
+const external = project.external;
 ---
 
 <Layout title={project.title} description={project.summary}>

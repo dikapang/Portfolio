@@ -56,7 +56,7 @@ const acronym = (title: string): string =>
     {projects.length > 1 && (
       <div class="container index-foot" data-plx="22">
         <nav class="proj-index" aria-label="Proyek">
-          {projects.map((p, i) => (
+          {projects.slice(0, 4).map((p, i) => (
             <a href={`#proj-${i + 1}`}>
               <span>{p.title}</span>
               <span class="idx">{String(i + 1).padStart(2, '0')}</span>
