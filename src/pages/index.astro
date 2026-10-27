@@ -320,7 +320,8 @@ const acronym = (title: string): string =>
   .work-card { gap: 1.25rem; padding: 1.5rem 0; overflow: hidden; transition: transform .3s var(--ease-out), border-color .2s, box-shadow .3s; }
   a.work-card:hover { transform: translateY(-5px); border-color: color-mix(in oklch, var(--foreground) 24%, transparent); box-shadow: var(--shadow-md); }
   .work-media { border: 1px solid var(--border); border-radius: var(--radius-lg); aspect-ratio: 16 / 9; overflow: hidden; }
-  .work-media img { width: 100%; height: 100%; object-fit: cover; }
+  .work-media { aspect-ratio: 16 / 9; overflow: hidden; }
+  .work-media img { width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block; }
   .work-cover {
     position: relative;
     border: 1px solid var(--border); border-radius: var(--radius-lg);
@@ -358,8 +359,11 @@ const acronym = (title: string): string =>
 
   /* Kapabilitas — kartu dengan sketsa canvas */
   .cap-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
-  .cap-card { padding: 0; overflow: hidden; }
-  .cap-visual { position: relative; aspect-ratio: 16 / 7; border-bottom: 1px solid var(--border); }
+  .cap-card { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+  .cap-visual {
+    position: relative; flex: none; min-height: 0;
+    aspect-ratio: 16 / 7; border-bottom: 1px solid var(--border);
+  }
   .cap-visual canvas { position: absolute; inset: 0; }
   .cap-body { display: flex; flex-direction: column; gap: .75rem; padding: 1.5rem; }
 
