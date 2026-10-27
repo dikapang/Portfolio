@@ -50,17 +50,17 @@ const brandName = site.name || 'Portfolio';
   .site-header {
     position: fixed; inset: 0 0 auto; z-index: 60;
     display: flex; align-items: flex-start; justify-content: space-between;
-    background: transparent; pointer-events: none;
-    border-bottom: 1px solid transparent;
+    background: none; pointer-events: none;
+    border-bottom: 0;
     transition: background .35s var(--ease-out), border-color .35s var(--ease-out);
   }
   .site-header a, .site-header button { pointer-events: auto; }
-  /* saat scroll turun: muncul latar blur tipis agar tautan tetap terbaca */
+  /* hanya setelah pengguna benar-benar scroll: latar blur tipis membantu keterbacaan */
   .site-header.is-scrolled {
     background: color-mix(in oklch, var(--background) 58%, transparent);
     -webkit-backdrop-filter: saturate(1.35) blur(14px);
     backdrop-filter: saturate(1.35) blur(14px);
-    border-bottom-color: var(--border);
+    border-bottom: 1px solid var(--border);
   }
 
   /* pojok kiri: tautan sosial, senyap */
@@ -80,8 +80,8 @@ const brandName = site.name || 'Portfolio';
 
   /* tombol menu: teks bergulir Menu/Tutup + dua garis */
   .menu-btn {
-    display: flex; align-items: center; gap: .75rem;
-    margin: 1.1rem 1.75rem 0 0; padding: .5rem .25rem;
+    display: flex; align-items: center; gap: .9rem;
+    margin: 1.1rem 2rem 0 0; padding: .5rem .35rem;
     background: none; border: 0; cursor: pointer;
     color: var(--foreground);
   }
@@ -89,7 +89,7 @@ const brandName = site.name || 'Portfolio';
   .roll { position: relative; display: grid; overflow: clip; height: 1.8rem; font-size: .95rem; font-weight: 600; }
   .roll span {
     grid-area: 1 / 1; display: block; height: 1.8rem; line-height: 1.45;
-    padding-bottom: .1em;
+    padding: 0 .15em .1em 0;
     transition: transform .55s var(--ease-out);
   }
   .roll-b { transform: translateY(115%); }
@@ -163,8 +163,9 @@ const brandName = site.name || 'Portfolio';
   addEventListener('resize', () => { if (innerWidth >= 900) setOpen(false); });
 
   if (hdr) {
-    const onScroll = () => hdr.classList.toggle('is-scrolled', scrollY > 8);
-    onScroll();
+    /* blur hanya muncul setelah benar-benar tergulir (> 64px), bukan karena
+       posisi scroll yang dipulihkan browser saat reload */
+    const onScroll = () => hdr.classList.toggle('is-scrolled', scrollY > 64);
     addEventListener('scroll', onScroll, { passive: true });
   }
 </script>
