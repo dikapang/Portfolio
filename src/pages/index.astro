@@ -274,8 +274,8 @@ const acronym = (title: string): string =>
   .bg-field canvas { width: 100% !important; height: 100% !important; }
   .intro-block {
     display: flex; flex-direction: column; align-items: flex-start; gap: 1.75rem; text-align: left;
-    margin-block: auto 8vh; margin-inline: 0; width: 100%; max-width: none;
-    padding-inline: max(1.5rem, calc((100vw - 1200px) / 2 + 1.25rem));
+    margin-block: auto; margin-inline: 0; width: 100%; max-width: none;
+    padding: 0 max(1.5rem, calc((100vw - 1200px) / 2 + 1.25rem)) clamp(5rem, 11vh, 7rem);
   }
   .hero-status {
     display: inline-flex; align-items: center; gap: .5rem;
