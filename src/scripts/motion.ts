@@ -22,6 +22,16 @@ if (!reduce) {
       ease: 'none',
       scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom 78%', scrub: true },
     });
+    /* strip tautan proyek di kaki hero ikut memudar sebelum chapter about tiba */
+    const foot = document.querySelector<HTMLElement>('.index-foot');
+    if (foot) {
+      gsap.to(foot, {
+        autoAlpha: 0,
+        y: 14,
+        ease: 'none',
+        scrollTrigger: { trigger: '.hero', start: 'top 20%', end: 'bottom 62%', scrub: true },
+      });
+    }
   }
 
   /* Parallax scroll untuk section:

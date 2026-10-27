@@ -231,7 +231,7 @@ const acronym = (title: string): string =>
 <style>
   /* Hero — dot-field di belakang, konten di tengah layar pertama */
   .hero {
-    position: absolute; top: 0; left: 0; right: 0; height: calc(100dvh - 4rem); isolation: isolate;
+    position: absolute; top: 0; left: 0; right: 0; height: 100dvh; isolation: isolate;
     display: flex; flex-direction: column;
     padding-top: clamp(2rem, 6vh, 5rem);
   }
@@ -260,15 +260,15 @@ const acronym = (title: string): string =>
 
   /* Chapter di dalam fase pin: layar kedua diisi panel Profil */
   .scene-chapter {
-    position: absolute; top: calc(100dvh - 4rem); left: 0; right: 0;
-    height: calc(100dvh - 4rem);
+    position: absolute; top: 100dvh; left: 0; right: 0;
+    height: 100dvh;
     display: grid; align-items: center;
   }
 
   /* Wrapper pin ala parallax: scene sticky setinggi viewport di bawah header */
   .scene-wrap { position: relative; height: 240dvh; }
   .bg-field {
-    position: sticky; top: 4rem; height: calc(100dvh - 4rem); overflow: clip;
+    position: sticky; top: 0; height: 100dvh; overflow: clip;
     z-index: -2; pointer-events: none;
   }
   .bg-field canvas { width: 100% !important; height: 100% !important; }
@@ -293,7 +293,12 @@ const acronym = (title: string): string =>
   .hero .lead { max-width: 38rem; font-size: 1.1875rem; }
 
   /* Strip indeks proyek di kaki hero — baris tautan bergaris rambut */
-  .index-foot { padding-top: 2.5rem; padding-bottom: 1.25rem; }
+  /* tautan proyek menyatu di dasar layar pertama hero — saat fase about
+     dimulai, strip ini sudah sepenuhnya lewat dari atas viewport */
+  .index-foot {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    padding: 2.5rem max(1.5rem, calc((100vw - 1200px) / 2 + 1.25rem)) 1.25rem;
+  }
   .proj-index {
     display: flex; flex-wrap: wrap; justify-content: center;
     gap: .25rem 1.75rem;
