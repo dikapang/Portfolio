@@ -51,8 +51,17 @@ const brandName = site.name || 'Portfolio';
     position: fixed; inset: 0 0 auto; z-index: 60;
     display: flex; align-items: flex-start; justify-content: space-between;
     background: transparent; pointer-events: none;
+    border-bottom: 1px solid transparent;
+    transition: background .35s var(--ease-out), border-color .35s var(--ease-out);
   }
   .site-header a, .site-header button { pointer-events: auto; }
+  /* saat scroll turun: muncul latar blur tipis agar tautan tetap terbaca */
+  .site-header.is-scrolled {
+    background: color-mix(in oklch, var(--background) 58%, transparent);
+    -webkit-backdrop-filter: saturate(1.35) blur(14px);
+    backdrop-filter: saturate(1.35) blur(14px);
+    border-bottom-color: var(--border);
+  }
 
   /* pojok kiri: tautan sosial, senyap */
   .socials { display: flex; gap: 1rem; padding: 1.5rem 0 0 1.75rem; }
@@ -77,14 +86,14 @@ const brandName = site.name || 'Portfolio';
     color: var(--foreground);
   }
   .menu-btn:focus-visible { outline: 2px solid var(--ring); outline-offset: 4px; border-radius: var(--radius-sm); }
-  .roll { position: relative; display: grid; overflow: clip; height: 1.65rem; font-size: .9375rem; font-weight: 600; }
+  .roll { position: relative; display: grid; overflow: clip; height: 1.8rem; font-size: .95rem; font-weight: 600; }
   .roll span {
-    grid-area: 1 / 1; display: block; height: 1.65rem; line-height: 1.35;
-    padding-bottom: .12em;
+    grid-area: 1 / 1; display: block; height: 1.8rem; line-height: 1.45;
+    padding-bottom: .1em;
     transition: transform .55s var(--ease-out);
   }
   .roll-b { transform: translateY(115%); }
-  :global([data-menu-open="true"]) .roll-a { transform: translateY(-100%); }
+  :global([data-menu-open="true"]) .roll-a { transform: translateY(-105%); }
   :global([data-menu-open="true"]) .roll-b { transform: translateY(0); }
   .lines { display: grid; gap: 4px; width: 26px; }
   .lines i { display: block; height: 1.5px; background: var(--foreground); transition: transform .55s var(--ease-out); transform-origin: center; }
